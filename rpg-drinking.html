@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" lang="en" />
+		<title>RPG Drinking Ver 0.1</title>
+		
+		<style type="text/css">
+			/* Default styles */
+			a { 
+				color: #FFF; 
+				display: block;
+				text-decoration: none;
+			}
+			a:visited { color: #FFF; }
+			body {  
+				background: #000;
+				font-family: Arial, sans-serif;
+				font-size: 12px;
+				line-height: 16px;
+				margin: 0;
+				padding: 0;
+			}
+			div { display: block; }
+			fieldset { 
+				border: 0; 
+				margin: 0;
+				padding: 10px;
+			}
+			h2 { 
+				font-size: 1.2em;
+				border-bottom: 1px solid #FFF;
+				margin: 0 0 10px 0; 
+				padding: 2px 0 10px 0;
+			}
+			input,
+			select {
+				-webkit-box-sizing: border-box;
+				-moz-box-sizing: border-box;
+				box-sizing: border-box;
+				margin-bottom: 15px;
+				padding: 5px 0 5px 10px;
+				width: 100%;
+			}
+			label { 
+				display: block;
+				margin-bottom: 5px; 
+			}
+			li { 
+				display: inline-block;
+				margin: 5px 0;
+				width: 100%;
+			}
+			p { margin: 0; }
+			ul { 
+				list-style-type: none; 
+				margin: 0;
+				padding: 0 0 0 2px;
+			}
+
+			/* Main  */
+			.hidden { display: none; }
+			#rpgDrinkWrap { 
+				height: 90%;
+				padding: 5%;
+				width: 90%; 
+			}
+
+			/* Menu */
+			.rpgMenu {
+				background: rgba(26, 35, 174, 0.6);
+				-webkit-border-radius: 10px;
+				-moz-border-radius: 10px;
+				border-radius: 10px;
+				border: 4px solid #FFF;
+   				-webkit-box-shadow: inset 0 0 10px #000000;
+     			-moz-box-shadow: inset 0 0 10px #000000;
+   				box-shadow: inset 0 0 10px #000000;
+				color: #FFF;
+				margin-bottom: 15px;
+				overflow: hidden;
+				padding: 2%;
+				width: auto;
+			}
+
+			/* Title */
+			#gameStart {
+				padding: 5px 0;
+			}
+			#errorMessage { 
+				color: yellow;
+				font-weight: bold;
+				margin-bottom: 15px; 
+				padding: 0 10px;
+			}
+
+			/* Stats */
+			#avatar { 
+				background: #FFF;
+				border: 1px solid #FFF;
+				display: none;
+				float: left;
+				height: 100px;
+				width: 100px; 
+			}
+			#statInfo { 
+				float: left;
+				width: 100px;
+			}
+			#status,
+			#location { display: none; }
+			#saveGame { color: yellow; }
+			#statInfo li { margin: 2px 0; }
+
+			/* Skill */
+			#skill div { margin: 2px 0; }
+			#skill a { margin-top: 15px; }
+			#skill #skillUses { margin: 15px 0 0 0; }
+			#skill p,
+			#useSkill { color: yellow; }
+
+			/* Item List */
+			#itemList li div { 
+				float: left;
+				margin-right: 10px; 
+			}
+
+			/* Item Icons */
+			#itemList { font-size: 11px; }
+			#itemList .itemIcon {
+				height: 15px;
+				width: 12px;
+			}
+			#itemList .itemIcon.potion { background: url('images/icons/potion.png') no-repeat; }
+			#itemList .itemIcon.hi-potion { background: url('images/icons/hi-potion.png') no-repeat; }
+			#itemList .itemIcon.x-potion { background: url('images/icons/x-potion.png') no-repeat; }
+			#itemList .itemIcon.ether { background: url('images/icons/ether.png') no-repeat; }
+			#itemList .itemIcon.hi-ether { background: url('images/icons/hi-ether.png') no-repeat; }
+			#itemList .itemIcon.turbo-ether { background: url('images/icons/turbo-ether.png') no-repeat; }
+			#itemList .itemIcon.elixir { background: url('images/icons/elixir.png') no-repeat; }
+			#itemList .itemIcon.megalixir { background: url('images/icons/megalixir.png') no-repeat; }
+			#itemList .itemIcon.phoenix-down { background: url('images/icons/pheonix-down.png') no-repeat; }
+			#itemList .itemIcon.antidote { background: url('images/icons/antidote.png') no-repeat; }
+			#itemList .itemIcon.remedy { background: url('images/icons/remedy.png') no-repeat; }
+			#itemList .itemIcon.antidote { background: url('images/icons/antidote.png') no-repeat; }
+			#itemList .itemIcon.eye-drops { background: url('images/icons/eye-drops.png') no-repeat; }
+			#itemList .itemIcon.tranquilizer { background: url('images/icons/tranquilizer.png') no-repeat; }
+			#itemList .itemIcon.hero-drink { background: url('images/icons/hero-drink.png') no-repeat; }
+			#itemList .itemIcon.hyper { background: url('images/icons/hyper.png') no-repeat; }
+			#itemList .itemIcon.soft { background: url('images/icons/soft.png') no-repeat; }
+			#itemList .itemIcon.holy-water  { background: url('images/icons/holy-water.png') no-repeat; }
+			#itemList .mil { display: none; }
+
+			/* Item Add/ Remove */
+			#itemList .itemAdd,
+			#itemList .itemRemove { 
+				float: right;
+				height: 20px; 
+				width: 20px;
+			}
+			#itemList .itemAdd a { 
+				background : url('images/add.png') no-repeat; 
+				height: 20px;
+				width: 20px;
+			}
+			#itemList .itemRemove a { 
+				background : url('images/remove.png') no-repeat; 
+				height: 20px;
+				width: 20px;
+			}
+
+		</style>
+
+	</head>
+	<body>
+
+		<!--
+			App Functionality:
+			
+			Title
+			Music
+			List of all items/ drinks - drinks consumed (increment on click)
+			Total 
+			Reset
+			Rules 
+			etc.
+
+		-->
+
+		<div id="rpgDrinkWrap">
+			<!-- Title -->
+			<div class="rpgMenu" id="title">
+				<h2>Information</h2>
+				<div id="errorMessage"></div>
+				<fieldset>
+					<label for="nameInput">Name:</label>
+					<input id="nameInput" name="nameInput" type="text" />
+					<label for="jobSel">Job:</label>
+					<select id="jobSel" name="jobSel">
+						<option value=""></option>
+						<option value="bm">Black Mage</option>
+						<option value="m">Monk</option>
+						<option value="rm">Red Mage</option>
+						<option value="t">Theif</option>
+						<option value="w">Warrior</option>
+						<option value="wm">White Mage</option>
+					</select>
+					<label for="genderSel">Gender:</label>
+					<select id="genderSel" name="genderSel">
+						<option value=""></option>
+						<option value="both">Both</option>
+						<option value="female">Female</option>
+						<option value="male">Male</option>
+					</select>
+					<input id="gameStart" type="button" value="New Game" />
+					<input class="hidden" id="loadGame" type="button" value="Load Game" />
+				</fieldset>
+			</div>
+
+			<!-- Stats -->
+			<div class="rpgMenu hidden" id="stats">
+				<h2>Stats</h2>
+				<div id="statInformation">
+					<div id="avatar"></div>
+					<ul id="statInfo">
+						<li id="name"></li>
+						<li id="gender"></li>
+						<li id="level">Level <span>1</span></li>
+						<li id="job"></li>
+						<li id="status"></li>
+						<li id="hp">100 hp</li>
+						<li id="mp">100 mp</li>
+						<li id="location"></li>
+						<li id="save">
+							<a id="saveGame" href="#">Save Game</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<!-- Skill -->
+			<div class="rpgMenu hidden" id="skill">
+				<h2>Skill</h2>
+				<div id="skillInfo">Info: <p></p></div>
+				<div id="skillUses">Uses: <span></span></div>
+				<div id="skillCoolDown">Cooldown: <span></span></div>
+				<a id="useSkill" href="#">Use Skill!</a>
+			</div>
+
+			<!-- Items -->
+			<div class="rpgMenu hidden" id="inventory">
+				<h2>Items</h2>
+				<ul id="itemList">
+					<li class="selItem">
+						<div class="itemIcon potion"></div>
+						<div class="itemName">Potion (Pint)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">500</div>
+					</li>
+					<li class="selItem">
+						<div class="itemIcon hi-potion"></div>
+						<div class="itemName">Hi-Potion (Whiskey Mixer)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">250</div>
+					</li>
+					<li class="selItem">
+						<div class="itemIcon x-potion"></div>
+						<div class="itemName">X-Potion (Whiskey Rocks)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">50</div>
+					</li>
+					<li class="selItem">
+						<div class="itemIcon ether"></div>
+						<div class="itemName">Ether (Vodka Mixer)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">250</div>
+					</li>
+					<li class="selItem">
+						<div class="itemIcon hi-ether"></div>
+						<div class="itemName">Hi-Ether (Vodka Shot)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">50</div>
+					</li>
+					<li class="selItem">
+						<div class="itemIcon turbo-ether"></div>
+						<div class="itemName">Turbo Ether (Jagerbomb)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">250</div>
+					</li>
+					<li class="selItem">
+						<div class="itemIcon elixir"></div>
+						<div class="itemName">Elixir (Rum Mixer)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">250</div>
+					</li>
+					<li class="selItem">
+						<div class="itemIcon megalixir"></div>
+						<div class="itemName">Megalixir (Rum Shot)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">50</div>
+					</li>
+					<li class="selItem">
+						<div class="itemIcon phoenix-down"></div>
+						<div class="itemName">Phoenix Down (Snakebite)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">500</div>
+					</li>
+					<li class="selItem">
+						<div class="itemIcon antidote"></div>
+						<div class="itemName">Antidote (Alcopop)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">330</div>
+					</li>
+					<li class="selItem">
+						<div class="itemIcon remedy"></div>
+						<div class="itemName">Remedy (Any Shot)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">50</div>
+					</li>
+					<li class="selItem">
+						<div class="itemIcon eye-drops"></div>
+						<div class="itemName">Eye Drops (Vodka Energy)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">250</div>
+					</li>
+					<li class="selItem">
+						<div class="itemIcon tranquilizer"></div>
+						<div class="itemName">Tranquilizer (Wine)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">250</div>
+					</li>
+					<li class="selItem">
+						<div class="itemIcon hero-drink"></div>
+						<div class="itemName">Hero Drink (Shit Mix)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">250</div>
+					</li>
+					<li class="selItem softDrink">
+						<div class="itemIcon hyper"></div>
+						<div class="itemName">Hyper (Energy Drink)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil"250</div>
+					</li>
+					<li class="selItem softDrink">
+						<div class="itemIcon soft"></div>
+						<div class="itemName">Soft (Soft Drink)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">250</div>
+					</li>
+					<li class="selItem softDrink">
+						<div class="itemIcon holy-water"></div>
+						<div class="itemName">Holy Water (Water)</div>
+						<div class="itemQuantity">0</div>
+						<div class="itemAdd">
+							<a href="#"></a>
+						</div>
+						<div class="itemRemove">
+							<a href="#"></a>
+						</div>
+						<div class="itemCursor"></div>
+						<div class="mil">500</div>
+					</li>
+				</ul>
+			</div>
+
+			<!-- Total -->
+			<div class="rpgMenu hidden" id="itemTotal">
+				<h2>Item Total</h2>
+				<ul id="totalList">
+					<li id="drinkTotal"><span>0</span> drinks consumed</li>
+					<li id="drinkMil"><span>0</span> ml</li>
+				</ul>
+			</div>
+		</div>
+
+		<!-- Scripts -->
+		<script src="bin/model/model.min.js" type="text/javascript"></script>
+		<script src="bin/view/view.min.js" type="text/javascript"></script>
+		<script src="bin/controller/controller.min.js" type="text/javascript"></script>
+
+		<script type="text/javascript">
+			controller.events.addEvts();
+		</script>
+
+	</body>
+	
+
+</html>
